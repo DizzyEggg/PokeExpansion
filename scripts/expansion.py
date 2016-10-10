@@ -195,7 +195,7 @@ def dex_related_bytechanges(rom):
 		rom.write(max_pokes)
 
 shutil.copyfile(rom_name, new_rom_name)
-with open('BPEE0.gba', 'rb+') as rom:
+with open(new_rom_name, 'rb+') as rom:
 	if (no_of_sizeofs != no_of_tables or no_of_sizeofs != no_of_to_repoints or no_of_names != no_of_sizeofs):
 		print("Tables don't match.")
 		print(no_of_names, " ", no_of_sizeofs, " ", no_of_tables, " ", no_of_to_repoints)
