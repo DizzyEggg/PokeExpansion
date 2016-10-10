@@ -18,6 +18,7 @@ TmHmComp_repoint = True
 MoveTutorComp_repoint = True
 evos_per_entry = 5
 rom_name = 'expans.gba'
+new_rom_name = 'new.gba'
 
 table_names = ["base_stats", "poke_front_img", "poke_back_img", "poke_sprite_pal", "shiny_sprite_pal", "icon_img", "icon_pal", "poke_names", "tm_hm_comp_table", "move_tutor_table", "dex_table", "evo_table", "enymyyTable", "playeryTable", "learnset_table", "front_animation_table", "anim_delay_table", "footprint_table", "crytable1", "crytable2", "altitude_table", "auxialary_cry_table", "nationaldex_table", "hoenn_to_national_table", "hoenn_dex_table", "back_anim_table", "frame_control_table"]
 table_ptrs = [0x0001BC, 0x000128, 0x00012C, 0x000130, 0x000134, 0x000138, 0x00013C, 0x000144, 0x06E060, 0x1B2390, 0x0BFA20, 0x06D140, 0x0A5F54, 0x0A5EBC, 0x06E3B4, 0x06EE7C, 0x06EDDC, 0x0C0DBC, 0x0A35EC, 0x0A35DC, 0x0A5FF4, 0x06D534, 0x06D448, 0x06D494, 0x06D3FC, 0x17F488, 0x05E7BC]
@@ -193,7 +194,7 @@ def dex_related_bytechanges(rom):
 	else:
 		rom.write(max_pokes)
 
-shutil.copyfile(rom_name, 'BPEE0.gba')
+shutil.copyfile(rom_name, new_rom_name)
 with open('BPEE0.gba', 'rb+') as rom:
 	if (no_of_sizeofs != no_of_tables or no_of_sizeofs != no_of_to_repoints or no_of_names != no_of_sizeofs):
 		print("Tables don't match.")
