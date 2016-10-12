@@ -16,7 +16,7 @@ if sys.version_info < (3, 4):
 # Parse arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--offset', metavar='offset', type=int, 
-                    help='offset to insert at', default=0xF60000)
+                    help='offset to insert at', default=0xFA0000)
 parser.add_argument('--input', metavar='file', 
                     help='input filename', default='BPEE0.gba')
 parser.add_argument('--output', metavar='file', 

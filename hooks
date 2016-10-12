@@ -16,3 +16,4 @@ dex_cant_choose_unseen_poke2 080BBEFA 1
 poke_being_viewed_handle_up 080BD968 1
 poke_being_viewed_handle_down 080BD9EC 1
 national_to_species 0806D40C 1
+is_using_two_frame_anim 0806F0D4 2

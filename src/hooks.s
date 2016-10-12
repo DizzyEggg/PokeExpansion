@@ -3,7 +3,7 @@
 .align 2
 .global get_newpokes_state_ptr
 
-.equ DEX_POKES, 998
+.equ DEX_POKES, 721
 .equ NEW_POKES, DEX_POKES - 385
 .equ NEW_POKES_SIZE, NEW_POKES * 4
 

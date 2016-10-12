@@ -394,6 +394,13 @@ u16 dex_get_searched_pokes(enum dex_mode mode, enum dex_order order, u8 name, u8
     return *pokes_in;
 }
 
+u16 is_using_two_frame_anim(u16 species)
+{
+    if (species == PKMN_UNOWN || species == PKMN_SPINDA || species == PKMN_DEOXYS || species == PKMN_CASTFORM || species >= PKMN_MAX)
+        return 0;
+    return 1;
+}
+
 u8 sav_to_flash_section(u8 sectionID) //second argument is omitted, because it's always the same
 {
     u8 modsi = __umodsi3(sav_counterplus1 + sectionID, 0xE);
