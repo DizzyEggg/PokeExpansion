@@ -35,7 +35,7 @@ Step 5 - execute scripts:
 
 - Open the command prompt in the same folder your rom is
 
-- Type python scripts//expansion.py then python scripts//build then python scripts//insert
+- Type python scripts//expansion.py, python scripts//build and python scripts//insert in given order
 
 - A new file 'test.gba' will be created. You can open it and enjoy your expanded Pokemon.
 
