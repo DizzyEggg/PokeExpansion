@@ -3,7 +3,7 @@ Safe and dynamic Pokemon expansion in Pokemon Emerald version
 
 Installation:
 
-Step one: //download needed tools
+Step 1 - download needed tools:
 
 - Download devkitpro. Follow the instructions.
 (Note: you can only install devkitARM)
@@ -14,8 +14,29 @@ After downloading and before proceeding to install make sure that the 'add to pa
 - Download the master folder from this github page
 (click 'Clone or Download', then 'Download Zip')
 
-Step Two: //configure the expansion data
+Step 2 - configure the expansion data:
 
 - Open the expansion.py file in the scripts folder.
 
-- Change the following lines...tbc
+- Change the lines commented out
+(starting at free_space ending at evos_per_entry)
+
+Step 3 - configure the code data:
+
+- Open the defines.h file in the src folder and change DEX_POKES define to how many pokemon seen in dex you want
+
+- Open the hooks.s file in the src folder and do the same change
+
+Step 4 - get your rom:
+
+- Put your rom in the master directory and rename it to 'rom.gba'
+
+Step 5 - execute scripts:
+
+- Open the command prompt in the same folder your rom is
+
+- Type python scripts//expansion.py then python scripts//build then python scripts//insert
+
+- A new file 'test.gba' will be created. You can open it and enjoy your expanded Pokemon.
+
+- Additional file 'offsets.ini' contains the offsets of repointed tables
