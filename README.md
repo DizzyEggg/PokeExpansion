@@ -27,6 +27,8 @@ Step 3 - configure the code data:
 
 - Open the hooks.s file in the src folder and do the same change
 
+- Open the linker.ld and insert files. Replace 0xFA0000 with an offset of your choice to put the code there
+
 Step 4 - get your rom:
 
 - Put your rom in the master directory and rename it to 'rom.gba'
