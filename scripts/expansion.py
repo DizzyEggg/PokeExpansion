@@ -288,7 +288,7 @@ with open(new_rom_name, 'rb+') as rom:
 			offset = repoint_table(rom, offset, i)
 	dex_related_bytechanges(rom)
 	offset = align_offset(offset)
-	if dex_pokes <= 999:
+	if dex_pokes <= 1:
 		prepare_building_code(offset)
 		os.system("python scripts//build")
 		os.system("python scripts//insert")
