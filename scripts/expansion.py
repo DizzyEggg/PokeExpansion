@@ -1,26 +1,27 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import shutil
 
 #if you didn't expand pokemon before, do not touch those values
 expanding_again = False
 old_pokes = 412
+evos_per_entry = 5 
 
 ##################################################################
 #those values should be configured according to user
-free_space = 0xF50000 #location to start looking for free space
+free_space = 0xF00000 #location to start looking for free space
 new_pokes = X + 441 #X is the number of pokemon you're adding, ignore that 441, it's for all limbo slots; say you want to include gen 4, 5 and 6 that gives 335
 dex_pokes = 721 #amount of pokes you want to have in national dex; max you can currently go is 999
 clear_repointed_data = True #if True clears old tables, if False doesn't touch them
 Movesets_repoint = True #set to False if you don't want to repoint learnset table, (if you're using Emerald's battle upgrade set to False)
 TmHmComp_repoint = True #set to False if you don't want to repoint tm/hm comp tables; for example: you expanded tms
-MoveTutorComp_repoint = True #same as above but movetutor tabl e
-evos_per_entry = 5 #amount of evolutions avaiable for each pokemon
+MoveTutorComp_repoint = True #same as above but movetutor table
 ##################################################################
 
 rom_name = 'rom.gba'
-new_rom_name = 'BPEE0.gba'
+new_rom_name = 'test.gba'
 offset_file = 'offsets.ini'
 
 table_names = ["base_stats", "poke_front_img", "poke_back_img", "poke_sprite_pal", "shiny_sprite_pal", "icon_img", "icon_pal", "poke_names", "tm_hm_comp_table", "move_tutor_table", "dex_table", "evo_table", "enymyyTable", "playeryTable", "learnset_table", "front_animation_table", "anim_delay_table", "footprint_table", "crytable1", "crytable2", "altitude_table", "auxialary_cry_table", "nationaldex_table", "hoenn_to_national_table", "hoenn_dex_table", "back_anim_table", "frame_control_table"]
@@ -151,7 +152,7 @@ def get_no_of_old_slots(tableID):
 		elif name == "front_animation_table" or name == "anim_delay_table" or name == "hoenn_dex_table" or name == "nationaldex_table" or name == "hoenn_to_national_table":
 			return old_pokes - 1
 		elif name == "crytable1" or name == "crytable2":
-			return old_pokes + 2
+			return 388
 		elif name == "auxialary_cry_table":
 			return 136
 	return old_pokes
@@ -235,7 +236,32 @@ def dex_related_bytechanges(rom):
 		rom.write((999).to_bytes(4, byteorder = 'little'))
 	else:
 		rom.write(max_pokes)
-
+		
+def prepare_building_code(offset):
+	dex1 = open("src/hooks.s", 'r+')
+	dex1.seek(0x4B)
+	dex1.write(str(dex_pokes))
+	dex1.close()
+	dex2 = open("src/defines.h", 'r+')
+	dex2.seek(0x5A)
+	dex2.write(str(dex_pokes))
+	dex2.close()
+	linker = open("linker.ld", 'r+')
+	towrite = hex(offset + 0x08000000)
+	linker.seek(0x36)
+	linker.write(towrite)
+	linker.close()
+	insert = open("scripts/insert", 'r+')
+	insert.seek(0x19C)
+	if (offset <= 0xFFFFFF):
+		towrite = "0x"
+		towrite += hex(offset)[2:].zfill(7)
+	else:
+		towrite = hex(offset)
+	towrite += ")"
+	insert.write(towrite)
+	insert.close()
+		
 shutil.copyfile(rom_name, new_rom_name)
 with open(new_rom_name, 'rb+') as rom:
 	if (no_of_sizeofs != no_of_tables or no_of_sizeofs != no_of_to_repoints or no_of_names != no_of_sizeofs):
@@ -248,10 +274,11 @@ with open(new_rom_name, 'rb+') as rom:
 	if expanding_again == True and old_pokes <= 440:
 		print("When expanding again amount of old pokemon must be higher than 440")
 		sys.exit(1)
-	needed_bytes = 0
+	needed_bytes = 0xC94 #needed for the code
 	for i in range(0, no_of_tables):
-		needed_bytes += (new_pokes * sizeofs[i])
-		needed_bytes = align_offset(needed_bytes)
+		if (to_repoint[i] == True):
+			needed_bytes += (new_pokes * sizeofs[i])
+			needed_bytes = align_offset(needed_bytes)
 	offset = find_offset_to_put(rom, needed_bytes)
 	if (offset == 0):
 		print("Not enough free space.")
@@ -260,4 +287,9 @@ with open(new_rom_name, 'rb+') as rom:
 		if (to_repoint[i] == True):
 			offset = repoint_table(rom, offset, i)
 	dex_related_bytechanges(rom)
+	offset = align_offset(offset)
+	if dex_pokes <= 999:
+		prepare_building_code(offset)
+		os.system("python scripts//build")
+		os.system("python scripts//insert")
 	rom.close()
