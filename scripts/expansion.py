@@ -236,32 +236,7 @@ def dex_related_bytechanges(rom):
 		rom.write((999).to_bytes(4, byteorder = 'little'))
 	else:
 		rom.write(max_pokes)
-		
-def prepare_building_code(offset):
-	dex1 = open("src/hooks.s", 'r+')
-	dex1.seek(0x4B)
-	dex1.write(str(dex_pokes))
-	dex1.close()
-	dex2 = open("src/defines.h", 'r+')
-	dex2.seek(0x5A)
-	dex2.write(str(dex_pokes))
-	dex2.close()
-	linker = open("linker.ld", 'r+')
-	towrite = hex(offset + 0x08000000)
-	linker.seek(0x36)
-	linker.write(towrite)
-	linker.close()
-	insert = open("scripts/insert", 'r+')
-	insert.seek(0x19C)
-	if (offset <= 0xFFFFFF):
-		towrite = "0x"
-		towrite += hex(offset)[2:].zfill(7)
-	else:
-		towrite = hex(offset)
-	towrite += ")"
-	insert.write(towrite)
-	insert.close()
-		
+				
 shutil.copyfile(rom_name, new_rom_name)
 with open(new_rom_name, 'rb+') as rom:
 	if (no_of_sizeofs != no_of_tables or no_of_sizeofs != no_of_to_repoints or no_of_names != no_of_sizeofs):
@@ -287,9 +262,4 @@ with open(new_rom_name, 'rb+') as rom:
 		if (to_repoint[i] == True):
 			offset = repoint_table(rom, offset, i)
 	dex_related_bytechanges(rom)
-	offset = align_offset(offset)
-	if dex_pokes <= 1:
-		prepare_building_code(offset)
-		os.system("python scripts//build")
-		os.system("python scripts//insert")
 	rom.close()
