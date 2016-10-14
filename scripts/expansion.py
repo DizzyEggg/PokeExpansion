@@ -249,7 +249,7 @@ with open(new_rom_name, 'rb+') as rom:
 	if expanding_again == True and old_pokes <= 440:
 		print("When expanding again amount of old pokemon must be higher than 440")
 		sys.exit(1)
-	needed_bytes = 0xC94 #needed for the code
+	needed_bytes = 0x0
 	for i in range(0, no_of_tables):
 		if (to_repoint[i] == True):
 			needed_bytes += (new_pokes * sizeofs[i])
