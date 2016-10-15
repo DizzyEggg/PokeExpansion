@@ -13,7 +13,7 @@ evos_per_entry = 5
 #those values should be configured according to user
 build_code = True #set to False if you want this script to only replace tables and to not run build/insert scripts
 free_space = 0xF00000 #location to start looking for free space
-new_pokes = 382 + 441 #X is the number of pokemon you're adding, ignore that 441, it's for all limbo slots; say you want to include gen 4, 5 and 6 that gives 335
+new_pokes = X + 441 #X is the number of pokemon you're adding, ignore that 441, it's for all limbo slots; say you want to include gen 4, 5 and 6 that gives 335
 dex_pokes = 721 #amount of pokes you want to have in national dex; max you can currently go is 999
 hoenn_dex_pokes = 202 #amount of pokes in the regional hoenn dex
 clear_repointed_data = True #if True clears old tables, if False doesn't touch them
