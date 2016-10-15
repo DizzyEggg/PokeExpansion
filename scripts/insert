@@ -19,8 +19,6 @@ parser.add_argument('--offset', metavar='offset', type=int,
                     help='offset to insert at', default=0xFA0000)
 parser.add_argument('--input', metavar='file', 
                     help='input filename', default='test.gba')
-parser.add_argument('--output', metavar='file', 
-                    help='output filename', default='test.gba')
 parser.add_argument('--debug', action='store_true',
                     help='print symbol table')
 
@@ -138,7 +136,7 @@ def bytereplace(rom, offset, data):
                 rom.write(bytes(intbyte.to_bytes(1, 'big')))
                 ar += 1
 
-with open(args.output, 'rb+') as rom:
+with open(args.input, 'rb+') as rom:
         offset = get_text_section()
         table = symbols(offset)
         where = insert(rom)
@@ -228,3 +226,4 @@ with open(args.output, 'rb+') as rom:
                 for key in sorted(table.keys()):
                         fstr = ('{:' + str(width) + '} {:08X}')
                         print(fstr.format(key + ':', table[key] + 0x08000000))
+

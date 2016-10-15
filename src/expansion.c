@@ -3,6 +3,7 @@
 #include "functions.h"
 #include "string.h"
 #include "locations.h"
+#include "search_tables.h"
 
 #define POK_DIV8 DEX_POKES / 8
 #define FLAGS_NUMBER POK_DIV8 % 8 ? POK_DIV8 + 1 : POK_DIV8
@@ -100,8 +101,6 @@ void set_pokes_in_dex(u16 max_pokes, u8 hoennn, u16 table[], u8 reverse)
 {
     u16 seen_in_dex = 0;
     struct pokedex_state* state;
-    if (table && max_pokes > 386)
-        max_pokes = 386;
     for (u32 i = 0; i < max_pokes; i++)
     {
         u8 table_true = 1;
@@ -118,7 +117,7 @@ void set_pokes_in_dex(u16 max_pokes, u8 hoennn, u16 table[], u8 reverse)
                 table_true = 0;
         }
         u8 seen_flag = get_set_dex_flags(national_no, 0);
-        if ((seen_flag || (seen_in_dex && !table)) && table_true)
+        if ((seen_flag || (seen_in_dex && !table)) && table_true && national_no)
         {
             state = get_poke_state_ptr(seen_in_dex);
             state->national_dex_no = national_no;
@@ -244,6 +243,16 @@ void poke_set_to_viewing_searching(u8 taskID)
     poke_set_to_viewing(taskID, (void*) (0x080BC360 | 1), 1);
 }
 
+u16 hoenn_pokes_count(u8 mode)
+{
+    u16 count = 0;
+    for (u16 i = 1; i < HOENN_DEX_POKES; i++)
+    {
+        count += get_set_dex_flags(hoenn_to_national(i), mode);
+    }
+    return count;
+}
+
 u16 national_to_species(u16 national_no)
 {
     if (national_no)
@@ -276,19 +285,19 @@ void set_pokes_to_display_in_dex(enum dex_mode mode, enum dex_order order)
             set_pokes_in_dex(max_pokes, hoennn, 0, 0);
             break;
         case a_to_z:
-            set_pokes_in_dex(DEX_POKES, hoennn, (void*) 0x0855C6A4, 0);
+            set_pokes_in_dex(DEX_POKES, hoennn, &a_to_z_table[0], 0);
             break;
         case lightest:
-            set_pokes_in_dex(DEX_POKES, hoennn, (void*) 0x0855C9DA, 0);
+            set_pokes_in_dex(DEX_POKES, hoennn, &lightest_table[0], 0);
             break;
         case heaviest:
-            set_pokes_in_dex(DEX_POKES, hoennn, (void*) 0x0855C9DA, 1);
+            set_pokes_in_dex(DEX_POKES, hoennn, &lightest_table[0], 1);
             break;
         case smallest:
-            set_pokes_in_dex(DEX_POKES, hoennn, (void*) 0x0855CCDE, 0);
+            set_pokes_in_dex(DEX_POKES, hoennn, &smallest_table[0], 0);
             break;
         case tallest:
-            set_pokes_in_dex(DEX_POKES, hoennn, (void*) 0x0855CCDE, 1);
+            set_pokes_in_dex(DEX_POKES, hoennn, &smallest_table[0], 1);
             break;
     }
 }

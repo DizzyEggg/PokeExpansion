@@ -11,9 +11,11 @@ evos_per_entry = 5
 
 ##################################################################
 #those values should be configured according to user
+build_code = True #set to False if you want this script to only replace tables and to not run build/insert scripts
 free_space = 0xF00000 #location to start looking for free space
-new_pokes = X + 441 #X is the number of pokemon you're adding, ignore that 441, it's for all limbo slots; say you want to include gen 4, 5 and 6 that gives 335
+new_pokes = 382 + 441 #X is the number of pokemon you're adding, ignore that 441, it's for all limbo slots; say you want to include gen 4, 5 and 6 that gives 335
 dex_pokes = 721 #amount of pokes you want to have in national dex; max you can currently go is 999
+hoenn_dex_pokes = 202 #amount of pokes in the regional hoenn dex
 clear_repointed_data = True #if True clears old tables, if False doesn't touch them
 Movesets_repoint = True #set to False if you don't want to repoint learnset table, (if you're using Emerald's battle upgrade set to False)
 TmHmComp_repoint = True #set to False if you don't want to repoint tm/hm comp tables; for example: you expanded tms
@@ -39,8 +41,8 @@ def align_offset(offset):
 		offset += 1
 	return offset
 
-def find_offset_to_put(rom, needed_bytes):
-	offset = free_space
+def find_offset_to_put(rom, needed_bytes, start_loc):
+	offset = start_loc
 	found_bytes = 0
 	while (found_bytes < needed_bytes):
 		for i in range (0, needed_bytes):
@@ -162,12 +164,24 @@ def save_table_ptrs(name, offset, not_clear):
 	if not_clear == 0:
 		ini.seek(0x0)
 		ini.truncate()
+		ini.write("AllPokes: ")
+		ini.write(str(new_pokes) + "\n")
+		ini.write("NationalDexPokes: ")
+		ini.write(str(dex_pokes) + "\n")
+		ini.write("RegionalDexPokes: ")
+		ini.write(str(hoenn_dex_pokes) + "\n")
 	ini.write(name)
 	ini.write(": ")
 	ini.write(hex(offset))
 	ini.write("\n")
 	ini.close()
 
+def clear_space(rom, loc, bytes):
+	if (clear_repointed_data == True):
+		rom.seek(loc)
+		for i in range(0, bytes):
+			rom.write(b'\xFF')
+	
 def repoint_table(rom, offset, tableID):
 	table_ptr = get_oldtable_address(rom, tableID)
 	name = table_names[tableID]
@@ -186,10 +200,7 @@ def repoint_table(rom, offset, tableID):
 		offset = align_offset(offset)
 		rom.seek(offset)
 		rom.write(to_copy)
-		if (clear_repointed_data == True):
-			rom.seek(table_ptr)
-			for i in range(0, needed_old):
-				rom.write(b'\xFF')
+		clear_space(rom, table_ptr, needed_old)
 		update_ptrs(rom, offset + 0x08000000, tableID)
 		save_table_ptrs(name, offset, tableID)
 		offset += needed_old
@@ -232,11 +243,49 @@ def repoint_table(rom, offset, tableID):
 def dex_related_bytechanges(rom):	
 	max_pokes = (dex_pokes - 1).to_bytes(4, byteorder = 'little')
 	rom.seek(0x0C080C)
-	if dex_pokes > 999:
-		rom.write((999).to_bytes(4, byteorder = 'little'))
-	else:
-		rom.write(max_pokes)
-				
+	rom.write(max_pokes)
+	clear_space(rom, 0x55C6A4, 411 * 2 + 386 * 2 + 387 * 2) #clear A-to-z, lightest, smallest tables
+		
+def replace_word(file, to_search, replacement):
+	get = 0
+	break_loop = 0
+	to_replace = to_search + " "
+	file.seek(0x0)
+	for line in file:
+		if (break_loop == 1):
+			break
+		for word in line.split():
+			if (word == to_search):
+				get = 1
+			elif (get == 1):
+				to_replace += word
+				break_loop = 1
+				break
+	file.seek(0x0)
+	copy = file.read()
+	copy = copy.replace(to_replace, to_search + " " + replacement)
+	file.seek(0x0)
+	file.write(copy)
+		
+def build_and_insert_code(offset, only_build):
+	linker = open("linker.ld", 'r+')
+	replace_word(linker, '+', hex(offset) + "),")
+	linker.close()
+	os.system("python scripts//build")
+	c_define = open("src//defines.h", 'r+')
+	replace_word(c_define, "DEX_POKES", str(dex_pokes))
+	replace_word(c_define, "HOENN_DEX_POKES", str(hoenn_dex_pokes))
+	c_define.close()
+	asm_define = open("src//hooks.s", 'r+')
+	replace_word(asm_define, "DEX_POKES,", str(dex_pokes))
+	asm_define.close()
+	if (only_build == True):
+		return
+	insert = open("scripts//insert", 'r+')
+	replace_word(insert, "at',", "default=" + hex(offset) + ')')
+	insert.close()
+	os.system("python scripts//insert --debug >function_offsets.ini")
+		
 shutil.copyfile(rom_name, new_rom_name)
 with open(new_rom_name, 'rb+') as rom:
 	if (no_of_sizeofs != no_of_tables or no_of_sizeofs != no_of_to_repoints or no_of_names != no_of_sizeofs):
@@ -249,12 +298,12 @@ with open(new_rom_name, 'rb+') as rom:
 	if expanding_again == True and old_pokes <= 440:
 		print("When expanding again amount of old pokemon must be higher than 440")
 		sys.exit(1)
-	needed_bytes = 0x0
+	needed_bytes = 0x0 
 	for i in range(0, no_of_tables):
 		if (to_repoint[i] == True):
 			needed_bytes += (new_pokes * sizeofs[i])
 			needed_bytes = align_offset(needed_bytes)
-	offset = find_offset_to_put(rom, needed_bytes)
+	offset = find_offset_to_put(rom, needed_bytes, free_space)
 	if (offset == 0):
 		print("Not enough free space.")
 		sys.exit(1)
@@ -262,4 +311,12 @@ with open(new_rom_name, 'rb+') as rom:
 		if (to_repoint[i] == True):
 			offset = repoint_table(rom, offset, i)
 	dex_related_bytechanges(rom)
+	if build_code == True and expanding_again == False:
+		build_and_insert_code(offset, True)
+		needed_bytes = os.stat("build//output.bin")
+		offset = find_offset_to_put(rom, needed_bytes.st_size, offset)
+		if offset != 0:
+			build_and_insert_code(offset, False)
+		else:
+			print ("Not enough free space to insert code")
 	rom.close()

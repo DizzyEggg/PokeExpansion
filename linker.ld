@@ -27,3 +27,4 @@ SECTIONS {
         __end__ = __bss_end__ ;
         } >rom = 0xff
 }
+
