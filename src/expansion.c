@@ -443,29 +443,32 @@ u8 flash_to_sav()
     u8* new_sav = (u8*) &new_saveblock;
     u8 savFile = 0xE * (sav_index & 1);
     u32* added_bytes = (u32*) &active_bank; //just taken some location to store amount of bytes added
+    *added_bytes = 0;
     for (u8 savID = 0; savID <= 13; savID++)
     {
-        copy_flash_section(savID + savFile, sav_buff_ptr);
-        u8 sectionID = sav_buff_ptr->section_ID;
+        u8 sectionID;
+        u8 looper = 0;
+        do
+        {
+            copy_flash_section(looper + savFile, sav_buff_ptr);
+            sectionID = sav_buff_ptr->section_ID;
+            looper++;
+        } while (sectionID != savID);
         if (sectionID == 0)
         {
             sav_counterplus1 = savID;
-            *added_bytes = 0;
         }
-        if (sav_buff_ptr->magic_number == 0x8012025)
+        for (u16 i = 0; i < 0xFF0; i++)
         {
-            for (u16 i = 0; i < 0xFF0; i++)
+            u8* data_ptr;
+            if (i < sav_sections[sectionID].size)
+                data_ptr = sav_sections[sectionID].ptr + i;
+            else
             {
-                u8* data_ptr;
-                if (i < sav_sections[sectionID].size)
-                    data_ptr = sav_sections[sectionID].ptr + i;
-                else
-                {
-                    data_ptr = new_sav + *added_bytes;
-                    *added_bytes += 1;
-                }
-                *data_ptr = sav_buff_ptr->data[i];
+                data_ptr = new_sav + *added_bytes;
+                *added_bytes += 1;
             }
+            *data_ptr = sav_buff_ptr->data[i];
         }
     }
     return 1;
