@@ -22,6 +22,7 @@ Step 2 - configure the expansion data:
 (starting at free_space ending at evos_per_entry)
 
 - Depending whether build_code is true or false, steps below will differ. If it's true:
+
 * goto step5 and execute just python scripts//expansion.py
 
 Step 3 - configure the code data:
