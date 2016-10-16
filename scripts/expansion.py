@@ -208,7 +208,7 @@ def repoint_table(rom, offset, tableID):
 		offset += needed_old
 		rom.seek(offset)
 		#append unowns
-		if old_slots < 440:
+		if old_slots < 440 and name != "dex_table":
 			for i in range(old_slots, 440):
 				if (name == "poke_names"):
 					if i == old_slots:
@@ -232,7 +232,10 @@ def repoint_table(rom, offset, tableID):
 					rom.write(empty_slot)
 				offset += sizeof
 		# write new data for empty slots
-		for i in range(0, (new_pokes - 440)):
+		to_loop = new_pokes - 440
+		if (name == "dex_table"):
+			to_loop = dex_pokes - (old_slots - 1)
+		for i in range(0, to_loop):
 			if name == "hoenn_dex_table" or name == "hoenn_to_national_table":
 				rom.write((440 + i).to_bytes(sizeof, byteorder = 'little'))
 			elif name == "nationaldex_table":
