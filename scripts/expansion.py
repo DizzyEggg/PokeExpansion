@@ -122,6 +122,8 @@ def update_ptrs(rom, ptr, tableID):
 		rom.write((0xE007).to_bytes(2, byteorder = 'little'))
 		rom.seek(0x034B32)
 		rom.write((0xE007).to_bytes(2, byteorder = 'little'))
+		rom.seek(0x0DE860)
+		rom.write((new_pokes).to_bytes(4, byteorder = 'little'))
 	elif name == "icon_pal":
 		rom.seek(0x0D2E3A)
 		rom.write((0xE001).to_bytes(2, byteorder = 'little'))
