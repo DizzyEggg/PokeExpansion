@@ -153,7 +153,7 @@ def get_no_of_old_slots(tableID):
 			return 440
 		elif name == "dex_table":
 			return 387
-		elif name == "front_animation_table" or name == "anim_delay_table" or name == "hoenn_dex_table" or name == "nationaldex_table" or name == "hoenn_to_national_table":
+		elif name == "front_animation_table" or name == "anim_delay_table" or name == "nationaldex_table" or name == "hoenn_dex_table" or name == "hoenn_to_national_table":
 			return old_pokes - 1
 		elif name == "crytable1" or name == "crytable2":
 			return 388
@@ -227,7 +227,10 @@ def repoint_table(rom, offset, tableID):
 						rom.write((num).to_bytes(1, byteorder = 'little'))
 						rom.write((0xFF000000).to_bytes(4, byteorder = 'big'))
 				elif name == "nationaldex_table":
-					rom.write((0x0).to_bytes(sizeof, byteorder = 'little'))
+					if i == 439:
+						rom.write((387).to_bytes(sizeof, byteorder = 'little'))
+					else:
+						rom.write((0x0).to_bytes(sizeof, byteorder = 'little'))
 				else:
 					rom.write(empty_slot)
 				offset += sizeof
@@ -239,7 +242,7 @@ def repoint_table(rom, offset, tableID):
 			if name == "hoenn_dex_table" or name == "hoenn_to_national_table":
 				rom.write((440 + i).to_bytes(sizeof, byteorder = 'little'))
 			elif name == "nationaldex_table":
-				rom.write((387 + i).to_bytes(sizeof, byteorder = 'little'))
+				rom.write((388 + i).to_bytes(sizeof, byteorder = 'little'))
 			else:
 				rom.write(empty_slot)
 			offset += sizeof
