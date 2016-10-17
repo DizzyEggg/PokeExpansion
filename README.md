@@ -48,3 +48,7 @@ Step 6 - expanded rom along with offset file are created:
 - Additional file 'offsets.ini' contains the offsets of repointed tables
 
 - Additional file 'functions_offsets.ini' may contain the offsets of dex search tables and new functions
+
+Step 7 - create an ini file for PGE:
+
+- Run PGEinicreator.exe and test.ini will get updated with all the offsets
