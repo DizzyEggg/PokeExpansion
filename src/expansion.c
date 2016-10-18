@@ -453,22 +453,25 @@ u8 flash_to_sav()
             copy_flash_section(looper + savFile, sav_buff_ptr);
             sectionID = sav_buff_ptr->section_ID;
             looper++;
-        } while (sectionID != savID);
+        } while (sectionID != savID && looper <= 13);
         if (sectionID == 0)
         {
             sav_counterplus1 = savID;
         }
-        for (u16 i = 0; i < 0xFF0; i++)
+        if (sav_buff_ptr->magic_number == 0x8012025)
         {
-            u8* data_ptr;
-            if (i < sav_sections[sectionID].size)
-                data_ptr = sav_sections[sectionID].ptr + i;
-            else
+            for (u16 i = 0; i < 0xFF0; i++)
             {
-                data_ptr = new_sav + *added_bytes;
-                *added_bytes += 1;
+                u8* data_ptr;
+                if (i < sav_sections[sectionID].size)
+                    data_ptr = sav_sections[sectionID].ptr + i;
+                else
+                {
+                    data_ptr = new_sav + *added_bytes;
+                    *added_bytes += 1;
+                }
+                *data_ptr = sav_buff_ptr->data[i];
             }
-            *data_ptr = sav_buff_ptr->data[i];
         }
     }
     return 1;
