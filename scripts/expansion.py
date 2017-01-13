@@ -77,20 +77,6 @@ def update_ptrs(rom, ptr, tableID):
 	elif name == "poke_names":
 		rom.seek(0x06B944)
 		rom.write((0x0).to_bytes(6, byteorder = 'little'))
-	elif name == "crytable1":
-		rom.seek(0x0A3610)
-		rom.write((ptr + 0x600).to_bytes(4, byteorder = 'little'))
-		rom.seek(0x0A3634)
-		rom.write((ptr + 0xC00).to_bytes(4, byteorder = 'little'))
-		rom.seek(0x0A3670)
-		rom.write((ptr + 0x1200).to_bytes(4, byteorder = 'little'))
-	elif name == "crytable2":
-		rom.seek(0x0A3600)
-		rom.write((ptr + 0x600).to_bytes(4, byteorder = 'little'))
-		rom.seek(0x0A3624)
-		rom.write((ptr + 0xC00).to_bytes(4, byteorder = 'little'))
-		rom.seek(0x0A3648)
-		rom.write((ptr + 0x1200).to_bytes(4, byteorder = 'little'))
 	elif name == "anim_delay_table":
 		rom.seek(0x034BFE)
 		rom.write((0xE007).to_bytes(2, byteorder = 'little'))
