@@ -476,3 +476,13 @@ u8 flash_to_sav()
     }
     return 1;
 }
+
+struct crytable* get_cry_ptr(u16 ID, u8 cry_2)
+{
+    struct crytable* table_ptr;
+    if (cry_2)
+        table_ptr = (*crytable2_ptr);
+    else
+        table_ptr = (*crytable1_ptr);
+    return &table_ptr[ID];
+}
