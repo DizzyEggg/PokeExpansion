@@ -125,4 +125,10 @@ poke_being_viewed_handle_down:
 	lsl r0, r0, #0x1F
 	ldr r1, =(0x080BD9FA | 1)
 	bx r1
-		
+	
+get_pokecry:
+	mov r1, r9
+	bl get_cry_ptr
+	ldr r1, =(0x080A3656 | 1)
+	bx r1
+
