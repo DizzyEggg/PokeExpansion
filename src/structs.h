@@ -4,6 +4,19 @@
 #include "types.h"
 #include "defines.h"
 
+struct crytable{
+    u8 compressed_status;
+    u8 field1;
+    u8 field2;
+    u8 field3;
+    void* cry_ptr;
+    u16 field_8;
+    u16 field_A;
+};
+
+extern struct crytable *(crytable1_ptr)[DEX_POKES];
+extern struct crytable *(crytable2_ptr)[DEX_POKES];
+
 struct poke_basestats{
     u8 base_hp;
     u8 base_atk;
