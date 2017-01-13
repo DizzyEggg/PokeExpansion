@@ -11,6 +11,8 @@ sav3_ptr = 0x03005D94;
 dex_firstletter_table = 0x0856ED08;
 poke_name_table = 0x08000144;
 poke_basestats_table = 0x080001BC;
+crytable1_ptr = 0x080A35EC;
+crytable2_ptr = 0x0869EF24;
 
 sav_get_checksum = 0x08153164|1;
 copy_flash_section = 0x0815314C|1;
