@@ -7,7 +7,21 @@ import hashlib
 import subprocess
 import sys
 
-PATH = 'C://devkitPro//devkitARM//bin'
+PathVar = os.environ.get('Path')
+Paths = PathVar.split(';')
+PATH = ""
+for candidatePath in Paths:
+    if "devkitARM" in candidatePath:
+        PATH = candidatePath
+        break
+if PATH == "":
+	print('DevKit does not exist in your Path variable.\nChecking default location.')
+	PATH = 'C://devkitPro//devkitARM//bin'
+	if os.path.isdir(PATH) == False:
+		print("...\nDevkit not found.")
+		sys.exit(1)
+	else:
+		print("Devkit found.")
 PREFIX = '//arm-none-eabi-'
 AS = (PATH + PREFIX + 'as')
 CC = (PATH + PREFIX + 'gcc')
@@ -36,6 +50,7 @@ def make_output_file(filename):
 def process_assembly(in_file):
 	'''Assemble'''
 	out_file = make_output_file(in_file)
+	print ('Assembling %s' % in_file)
 	cmd = [AS] + ASFLAGS + ['-c', in_file, '-o', out_file]
 	run_command(cmd)
 	return out_file
@@ -43,6 +58,7 @@ def process_assembly(in_file):
 def process_c(in_file):
 	'''Compile C'''
 	out_file = make_output_file(in_file)
+	print ('Compiling %s' % in_file)
 	cmd = [CC] + CFLAGS + ['-c', in_file, '-o', out_file]
 	run_command(cmd)
 	return out_file

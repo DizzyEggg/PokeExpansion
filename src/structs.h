@@ -4,6 +4,17 @@
 #include "types.h"
 #include "defines.h"
 
+struct flags{
+    u8 flag;
+};
+
+struct newsaveblock{
+    struct flags seen_flags[FLAGS_NUMBER];
+    struct flags caught_flags[FLAGS_NUMBER];
+};
+
+extern struct newsaveblock new_saveblock;
+
 struct crytable{
     u8 compressed_status;
     u8 field1;
@@ -51,21 +62,9 @@ struct poke_basestats{
     u8 padding2;
 };
 
-struct base_stat_table{
-    struct poke_basestats basestats[DEX_POKES];
-};
+extern struct poke_basestats (*basestats_table)[ALL_POKES];
 
-extern struct base_stat_table* poke_basestats_table;
-
-struct pokenames{
-    u8 letter[11];
-};
-
-struct pokenames_all{
-    struct pokenames pokename[DEX_POKES];
-};
-
-extern struct pokenames_all* poke_name_table;
+extern u8 (*poke_name_table)[ALL_POKES][11];
 
 struct first_letter{
     u8 capitalID;

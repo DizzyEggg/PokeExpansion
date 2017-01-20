@@ -13,7 +13,7 @@ evos_per_entry = 5
 #those values should be configured according to user
 build_code = True #set to False if you want this script to only replace tables and to not run build/insert scripts
 free_space = 0xF00000 #location to start looking for free space
-new_pokes = X + 441 #X is the number of pokemon you're adding, ignore that 441, it's for all limbo slots; say you want to include gen 4, 5 and 6 that gives 335
+new_pokes = 335 + 441 #X is the number of pokemon you're adding, ignore that 441, it's for all limbo slots; say you want to include gen 4, 5 and 6 that gives 335
 dex_pokes = 721 #amount of pokes you want to have in national dex; max you can currently go is 999
 hoenn_dex_pokes = 202 #amount of pokes in the regional hoenn dex
 clear_repointed_data = True #if True clears old tables, if False doesn't touch them
@@ -42,7 +42,7 @@ def align_offset(offset):
 	return offset
 
 def find_offset_to_put(rom, needed_bytes, start_loc):
-	offset = start_loc
+	offset = align_offset(start_loc)
 	found_bytes = 0
 	while (found_bytes < needed_bytes):
 		for i in range (0, needed_bytes):
@@ -261,24 +261,23 @@ def replace_word(file, to_search, replacement):
 	file.seek(0x0)
 	file.write(copy)
 		
-def build_and_insert_code(offset, only_build):
+def build_and_insert_code(offset):
 	linker = open("linker.ld", 'r+')
 	replace_word(linker, '+', hex(offset) + "),")
 	linker.close()
-	os.system("python scripts//build")
 	c_define = open("src//defines.h", 'r+')
 	replace_word(c_define, "DEX_POKES", str(dex_pokes))
 	replace_word(c_define, "HOENN_DEX_POKES", str(hoenn_dex_pokes))
+	replace_word(c_define, "ALL_POKES", str(new_pokes))
 	c_define.close()
 	asm_define = open("src//hooks.s", 'r+')
 	replace_word(asm_define, "DEX_POKES,", str(dex_pokes))
 	asm_define.close()
-	if (only_build == True):
-		return
+	os.system("python scripts//build")
 	insert = open("scripts//insert", 'r+')
-	replace_word(insert, "at',", "default=" + hex(offset) + ')')
+	replace_word(insert, "INSERT_LOC", "=" + hex(offset))
 	insert.close()
-	os.system("python scripts//insert --debug >function_offsets.ini")
+	os.system("python scripts//insert")
 		
 shutil.copyfile(rom_name, new_rom_name)
 with open(new_rom_name, 'rb+') as rom:
@@ -292,7 +291,8 @@ with open(new_rom_name, 'rb+') as rom:
 	if expanding_again == True and old_pokes <= 440:
 		print("When expanding again amount of old pokemon must be higher than 440")
 		sys.exit(1)
-	needed_bytes = 0x0 
+	print("Finding free space...")
+	needed_bytes = 0x0
 	for i in range(0, no_of_tables):
 		if (to_repoint[i] == True):
 			needed_bytes += (new_pokes * sizeofs[i])
@@ -303,14 +303,13 @@ with open(new_rom_name, 'rb+') as rom:
 		sys.exit(1)
 	for i in range(0, no_of_tables):
 		if (to_repoint[i] == True):
+			print("Repointing " + table_names[i] + " to offset " + hex(offset))
 			offset = repoint_table(rom, offset, i)
 	dex_related_bytechanges(rom)
 	if build_code == True and expanding_again == False:
-		build_and_insert_code(offset, True)
-		needed_bytes = os.stat("build//output.bin")
-		offset = find_offset_to_put(rom, needed_bytes.st_size, offset)
+		offset = find_offset_to_put(rom, 0x2500, offset)
 		if offset != 0:
-			build_and_insert_code(offset, False)
+			build_and_insert_code(offset)
 		else:
 			print ("Not enough free space to insert code")
 	rom.close()
