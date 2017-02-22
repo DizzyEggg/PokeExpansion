@@ -43,20 +43,18 @@ def align_offset(offset):
 
 def find_offset_to_put(rom, needed_bytes, start_loc):
 	offset = align_offset(start_loc)
+	rom.seek(0, 2)
+	max_pos = rom.tell()
 	found_bytes = 0
-	while (found_bytes < needed_bytes):
-		for i in range (0, needed_bytes):
-			rom.seek(offset + i)
-			byte = rom.read(1)
-			if (byte):
-				if (byte != b'\xFF'):
-					offset += i + 1
-					align_offset(offset)
-					found_bytes = 0
-					break
-				found_bytes += 1
-			else:
-				return 0
+	while found_bytes < needed_bytes:
+		if offset + found_bytes >= max_pos:
+			print("End of file reached. ")
+			return 0
+		found_bytes += 1
+		rom.seek(offset + found_bytes)
+		if rom.read(1) != b'\xFF':
+			offset = align_offset(offset + found_bytes)
+			found_bytes = 0
 	return offset
 
 def get_oldtable_address(rom, tableID):
