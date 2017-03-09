@@ -1,2 +1,4 @@
 #fairy type ID to make the dex search function recognise it
 0856EFC6 17
+#get rid of lvl up icon pal limiter
+080D30B6 00 00 00 00 00 00 00 00 00 00 00 00
