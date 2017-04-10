@@ -379,3 +379,19 @@ struct crytable* get_cry_ptr(u16 ID, u8 cry_2)
         table_ptr = (*crytable1_ptr);
     return &table_ptr[ID];
 }
+
+u16 get_lowest_evo_stage(u16 species)
+{
+    for (u16 i = 1; i < ALL_POKES; i++)
+    {
+        struct evolution_sub* evo = (*evo_table)[i];
+        for (u8 j = 0; j < EVO_PER_POKE; j++)
+        {
+            if (evo[j].poke == species)
+            {
+                return get_lowest_evo_stage(i);
+            }
+        }
+    }
+    return species;
+}

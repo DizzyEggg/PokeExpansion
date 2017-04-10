@@ -131,4 +131,3 @@ get_pokecry:
 	bl get_cry_ptr
 	ldr r1, =(0x080A3656 | 1)
 	bx r1
-

@@ -3,9 +3,10 @@
 
 #include "types.h"
 
-#define ALL_POKES 776
+#define ALL_POKES 991
 #define DEX_POKES 721
 #define HOENN_DEX_POKES 202
+#define EVO_PER_POKE 5
 
 #define POK_DIV8 DEX_POKES / 8
 #define FLAGS_NUMBER POK_DIV8 % 8 ? POK_DIV8 + 1 : POK_DIV8

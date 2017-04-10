@@ -7,17 +7,20 @@ import shutil
 #if you didn't expand pokemon before, do not touch those values
 expanding_again = False
 old_pokes = 412
-evos_per_entry = 5 
+evos_per_entry = 5
 
 ##################################################################
 #those values should be configured according to user
 build_code = True #set to False if you want this script to only replace tables and to not run build/insert scripts
-free_space = 0xF00000 #location to start looking for free space
+free_space = 0xF60000 #location to start looking for free space
 new_pokes = X + 441 #X is the number of pokemon you're adding, ignore that 441, it's for all limbo slots; say you want to include gen 4, 5 and 6 that gives 335
 dex_pokes = 721 #amount of pokes you want to have in national dex; max you can currently go is 999
 hoenn_dex_pokes = 202 #amount of pokes in the regional hoenn dex
+new_names = True        #if True sets new pokemon to gen4, gen5, gen6 names, otherwise all pokemon are named Bulbasaur
 clear_repointed_data = True #if True clears old tables, if False doesn't touch them
 Movesets_repoint = True #set to False if you don't want to repoint learnset table, (if you're using Emerald's battle upgrade set to False)
+TmHmComp_repoint = True #set to False if you don't want to repoint tm/hm comp tables; for example: you expanded tms
+MoveTutorComp_repoint = True #same as above but movetutor table
 ##################################################################
 
 rom_name = 'rom.gba'
@@ -27,7 +30,7 @@ offset_file = 'offsets.ini'
 table_names = ["base_stats", "poke_front_img", "poke_back_img", "poke_sprite_pal", "shiny_sprite_pal", "icon_img", "icon_pal", "poke_names", "tm_hm_comp_table", "move_tutor_table", "dex_table", "evo_table", "enymyyTable", "playeryTable", "learnset_table", "front_animation_table", "anim_delay_table", "footprint_table", "crytable1", "crytable2", "altitude_table", "auxialary_cry_table", "nationaldex_table", "hoenn_to_national_table", "hoenn_dex_table", "back_anim_table", "frame_control_table"]
 table_ptrs = [0x0001BC, 0x000128, 0x00012C, 0x000130, 0x000134, 0x000138, 0x00013C, 0x000144, 0x06E060, 0x1B2390, 0x0BFA20, 0x06D140, 0x0A5F54, 0x0A5EBC, 0x06E3B4, 0x06EE7C, 0x06EDDC, 0x0C0DBC, 0x0A35EC, 0x0A35DC, 0x0A5FF4, 0x06D534, 0x06D4BC, 0x06D494, 0x06D3FC, 0x17F488, 0x05E7BC]
 sizeofs = [0x1C, 8, 8, 8, 8, 4, 1, 11, 8, 4, 0x20, evos_per_entry * 8, 4, 4, 4, 1, 1, 4, 0xC, 0xC, 1, 2, 2, 2, 2, 1, 4]
-to_repoint = [True, True, True, True, True, True, True, True, True, True, True, True, True, True, Movesets_repoint, True, True, True, True, True, True, True, True, True, True, True, True]
+to_repoint = [True, True, True, True, True, True, True, True, TmHmComp_repoint, MoveTutorComp_repoint, True, True, True, True, Movesets_repoint, True, True, True, True, True, True, True, True, True, True, True, True]
 
 no_of_names = len(table_names)
 no_of_tables = len(table_ptrs)
@@ -217,17 +220,25 @@ def repoint_table(rom, offset, tableID):
 					rom.write(empty_slot)
 				offset += sizeof
 		# write new data for empty slots
+		
 		to_loop = new_pokes - 440
 		if (name == "dex_table"):
 			to_loop = dex_pokes - (old_slots - 1)
+		if name == "poke_names":
+			genIV_V_VI_names = open("scripts//new_names.bin", 'rb')
 		for i in range(0, to_loop):
 			if name == "hoenn_dex_table" or name == "hoenn_to_national_table":
 				rom.write((440 + i).to_bytes(sizeof, byteorder = 'little'))
 			elif name == "nationaldex_table":
 				rom.write((388 + i).to_bytes(sizeof, byteorder = 'little'))
+			elif name == "poke_names" and new_names == True:
+				rom.write(genIV_V_VI_names.read(11))
 			else:
 				rom.write(empty_slot)
 			offset += sizeof
+		if name == "poke_names":
+			genIV_V_VI_names.close()
+		
 	return offset
 
 def dex_related_bytechanges(rom):	

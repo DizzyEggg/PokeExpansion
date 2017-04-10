@@ -254,4 +254,15 @@ struct image_resource{
 
 extern struct object objects[64];
 
+struct evolution_sub{
+    u8 method;
+    u16 paramter;
+    u16 poke;
+    u8 pad1;
+    u8 pad2;
+};
+
+extern struct evolution_sub (*evo_table)[ALL_POKES][EVO_PER_POKE];
+
+
 #endif /* B_STRUCTS */

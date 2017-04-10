@@ -253,7 +253,7 @@ palette_obj_faded = 0x02037D14;
 gpu_pal_tags_index_of = 0x8008804|1;
 obj_delete_and_free_tiles = 0x80070E8|1;
 item_data_ptr_ptr = 0x80001C8;
-evo_table_ptr_ptr = 0x806D140;
+evo_table = 0x806D140;
 poke_stat_table_ptr_ptr = 0x80001BC;
 
 /*Expandable tables*/
