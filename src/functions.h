@@ -10,6 +10,8 @@ u8 copy_flash_section(u8 index, void* dst);
 u8 has_national();
 u16 hoenn_to_national(u16 hoenn_no);
 u16 national_to_hoenn(u16 national_no);
+u16 species_to_national_dex(u16 species);
+u16 species_to_hoeen_dex(u16 species);
 void sub_80BD28C(u8 arg1, u8 arg2, u16 arg3);
 void dex_cursor_print_pokename(u16 national_no, u8 arg2, u8 arg3);
 void dex_cursor_print_pokeball(u16 caught, u8 arg2, u8 arg3);

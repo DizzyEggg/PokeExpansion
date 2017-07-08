@@ -395,3 +395,21 @@ u16 get_lowest_evo_stage(u16 species)
     }
     return species;
 }
+
+u16 species_to_dex(u16 species)
+{
+    u16 index;
+    if(has_national())
+    {
+        index = species_to_national_dex(species);
+    }
+    else
+    {
+        index = species_to_hoeen_dex(species);
+        if(index >= HOENN_DEX_POKES)
+        {
+            index = 0xFFFF;
+        }
+    }
+    return index;
+}

@@ -156,6 +156,7 @@ ability_something = 0x08042828|1;
 get_battle_side = 0x080A6A44|1;
 get_item_pocket_id = 0x080D7590|1;
 species_to_national_dex = 0x0806D4A4|1;
+species_to_hoeen_dex = 0x0806D4C8|1;
 get_height_or_weight = 0x080C0630|1;
 itemid_to_berryid = 0x080E19E8|1;
 rng = 0x0806F5CC|1;
